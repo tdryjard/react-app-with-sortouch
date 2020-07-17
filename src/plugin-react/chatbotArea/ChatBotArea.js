@@ -69,7 +69,7 @@ const ChatBotArea = (props) => {
         let wordSplit = word.toLowerCase().split('')
         let resReturn = []
         if (wordSplit.length > 2) {
-            fetch(`http://localhost:8000/api/response/chatbot/findAll/${props.userId}/${props.modelId}`, {
+            fetch(`http://localhost:8000/api/chatbot/response/findAll/${props.userId}/${props.modelId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const ChatBotArea = (props) => {
     const printContainers = async () => {
         if (lastResponse !== responseSelect) {
             try {
-                fetch(`http://localhost:8000/api/container/chatbot/findAll/${props.userId}/${responseSelect}/${props.modelId}`, {
+                fetch(`http://localhost:8000/api/chatbot/container/findAll/${props.userId}/${responseSelect}/${props.modelId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "question") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/relation/chatbot/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`, {
+                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "response") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/relation/chatbot/findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`, {
+                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation//findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "category") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/relation/chatbot/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`, {
+                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -331,7 +331,7 @@ const ChatBotArea = (props) => {
 
 
     const getColor = async () => {
-        const resFind = await fetch(`http://localhost:8000/api/model/chatbot/findAll/${props.userId}`, {
+        const resFind = await fetch(`http://localhost:8000/api/chatbot/model/findAll/${props.userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
