@@ -69,7 +69,13 @@ const ChatBotArea = (props) => {
         let wordSplit = word.toLowerCase().split('')
         let resReturn = []
         if (wordSplit.length > 2) {
-            fetch(`http://localhost:8000/response/chatbot/findAll/${props.userId}/${props.modelId}`)
+            fetch(`http://localhost:8000/response/chatbot/findAll/${props.userId}/${props.modelId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Acces-Control-Allow-Origin': '*'
+                }
+            })
                 .then(res => res.json())
                 .then(res => {
                     for (let i = 0; i < res.length; i++) {
@@ -112,7 +118,7 @@ const ChatBotArea = (props) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Acces-Control-Allow-Origin': { origin }
+                    'Acces-Control-Allow-Origin': '*'
                 },
                 body: JSON.stringify({
                     phone: phone,
@@ -129,7 +135,7 @@ const ChatBotArea = (props) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Acces-Control-Allow-Origin': { origin }
+                    'Acces-Control-Allow-Origin': '*'
                 },
                 body: JSON.stringify({
                     phone: phone,
@@ -168,7 +174,13 @@ const ChatBotArea = (props) => {
     const printContainers = async () => {
         if (lastResponse !== responseSelect) {
             try {
-                fetch(`http://localhost:8000/container/chatbot/findAll/${props.userId}/${responseSelect}/${props.modelId}`)
+                fetch(`http://localhost:8000/container/chatbot/findAll/${props.userId}/${responseSelect}/${props.modelId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Acces-Control-Allow-Origin': '*'
+                    }
+                })
                     .then(res => res.json())
                     .then(res => {
                         if ((containers.length > 0) && beforeSelect[0] !== 0) {
@@ -196,7 +208,13 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "question") {
-                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`)
+                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Acces-Control-Allow-Origin': '*'
+                        }
+                    })
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de question container id ${i}` }
@@ -209,7 +227,13 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "response") {
-                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`)
+                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Acces-Control-Allow-Origin': '*'
+                        }
+                    })
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de réponse container id ${i}` }
@@ -222,7 +246,13 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "category") {
-                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`)
+                    const resNoJson = await fetch(`http://localhost:8000/relation/chatbot/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Acces-Control-Allow-Origin': '*'
+                        }
+                    })
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de categorie container id ${i}` }
@@ -305,8 +335,7 @@ const ChatBotArea = (props) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Acces-Control-Allow-Origin': { origin },
-                'authorization': props.token
+                'Acces-Control-Allow-Origin': '*'
             }
         })
         const resFindJson = await resFind.json()
