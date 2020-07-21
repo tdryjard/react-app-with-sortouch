@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import Sortouch from './plugin-react/chatbotArea/ChatBotArea'
+import Sortouch from 'sortouch-react'
 import './App.css';
 
 function App() {

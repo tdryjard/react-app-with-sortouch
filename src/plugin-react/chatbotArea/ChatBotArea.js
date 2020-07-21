@@ -3,8 +3,8 @@ import Questionchat from '../questionBlock/QuestionChat';
 import cross from './cross.png'
 import logo from './logo.png'
 import reload from './reload.png'
-import back from './back.png'
 import { useForm } from "react-hook-form";
+import url from '../../../../api/url'
 import './FormContact.css'
 import './ChatBotArea.css'
 
@@ -69,38 +69,38 @@ const ChatBotArea = (props) => {
         let wordSplit = word.toLowerCase().split('')
         let resReturn = []
         if (wordSplit.length > 2) {
-            fetch(`http://localhost:8000/api/chatbot/response/findAll/${props.userId}/${props.modelId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Acces-Control-Allow-Origin': '*'
-                }
-            })
+            fetch(`${url}/chatbot/response/findAll/${props.userId}/${props.modelId}`)
                 .then(res => res.json())
                 .then(res => {
                     for (let i = 0; i < res.length; i++) {
-                        let resSplit = res[i].content.split('')
-                        let nbEgale = 0
-                        let nbLetter = 0
-                        for (let iWord = 0; iWord < wordSplit.length; iWord++) {
-                            for (let iRes = 0; iRes < resSplit.length; iRes++) {
-                                if (wordSplit[iWord] === resSplit[iRes]) {
-                                    nbLetter++
-                                    iWord++
-                                    if (nbLetter > 3) resReturn.push(res[i])
-                                } else {
-                                    if (nbLetter > 0) iRes--
-                                    nbLetter = 0
+                        if (res[i].content) {
+                            let resSplit = res[i].content.split('')
+                            let nbEgale = 0
+                            let nbLetter = 0
+                            for (let iWord = 0; iWord < wordSplit.length; iWord++) {
+                                for (let iRes = 0; iRes < resSplit.length; iRes++) {
+                                    if (wordSplit[iWord] === resSplit[iRes]) {
+                                        nbLetter++
+                                        iWord++
+                                        if (nbLetter > 3) resReturn.push(res[i])
+                                    } else {
+                                        if (nbLetter > 0) iRes--
+                                        nbLetter = 0
+                                    }
                                 }
                             }
+                            if (nbEgale > 0 && (resReturn[resReturn.length - 1].id !== res[i].id)) resReturn.push(res[i])
+                            nbEgale = 0
+
                         }
-                        if (nbEgale > 0 && (resReturn[resReturn.length - 1].id !== res[i].id)) resReturn.push(res[i])
-                        nbEgale = 0
                     }
                     let sortResult = resReturn.filter(function (item, pos) {
                         return resReturn.indexOf(item) == pos;
                     })
-                    if (resReturn.length > 0) setSearch(sortResult)
+                    if (resReturn.length > 0) {
+                        if (sortResult.length > 5) sortResult.length = 5
+                        setSearch(sortResult)
+                    }
                 })
         }
         if (wordSplit.length === 0) setSearch([])
@@ -114,11 +114,11 @@ const ChatBotArea = (props) => {
         } else if (!validatePhone(phone)) {
             alert('numéro de téléphone non valide')
         } else {
-            const result = await fetch(`http://localhost:8000/api/chatbot/mail/create`, {
+            const result = await fetch(`${url}/chatbot/mail/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Acces-Control-Allow-Origin': '*'
+                    'Acces-Control-Allow-Origin': { origin }
                 },
                 body: JSON.stringify({
                     phone: phone,
@@ -131,11 +131,11 @@ const ChatBotArea = (props) => {
                     date: dateChar
                 })
             });
-            const result2 = await fetch(`http://localhost:8000/api/chatbot/contact/create`, {
+            const result2 = await fetch(`${url}/chatbot/contact/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Acces-Control-Allow-Origin': '*'
+                    'Acces-Control-Allow-Origin': { origin }
                 },
                 body: JSON.stringify({
                     phone: phone,
@@ -162,9 +162,10 @@ const ChatBotArea = (props) => {
         if (props.userId && props.modelId) {
             printContainers()
         }
-    }, [props.userId, props.modelId, responseSelect, chatActive])
+    }, [props.userId, props.modelId, responseSelect])
 
     useEffect(() => {
+        getColor()
         setTimeout(() => {
             setTextIcon(false)
         }, 6000)
@@ -174,13 +175,7 @@ const ChatBotArea = (props) => {
     const printContainers = async () => {
         if (lastResponse !== responseSelect) {
             try {
-                fetch(`http://localhost:8000/api/chatbot/container/findAll/${props.userId}/${responseSelect}/${props.modelId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Acces-Control-Allow-Origin': '*'
-                    }
-                })
+                fetch(`${url}/chatbot/container/findAll/${props.userId}/${responseSelect}/${props.modelId}`)
                     .then(res => res.json())
                     .then(res => {
                         if ((containers.length > 0) && beforeSelect[0] !== 0) {
@@ -208,13 +203,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "question") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Acces-Control-Allow-Origin': '*'
-                        }
-                    })
+                    const resNoJson = await fetch(`${url}/chatbot/relation/findCardQuestion/${res[i].id}/${props.userId}/${props.modelId}`)
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de question container id ${i}` }
@@ -227,13 +216,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "response") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation//findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Acces-Control-Allow-Origin': '*'
-                        }
-                    })
+                    const resNoJson = await fetch(`${url}/chatbot/relation/findCardResponse/${res[i].id}/${props.userId}/${props.modelId}`)
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de réponse container id ${i}` }
@@ -246,13 +229,7 @@ const ChatBotArea = (props) => {
             if (res[i]) {
                 let result = []
                 if (res[i].content_type === "category") {
-                    const resNoJson = await fetch(`http://localhost:8000/api/chatbot/relation/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Acces-Control-Allow-Origin': '*'
-                        }
-                    })
+                    const resNoJson = await fetch(`${url}/chatbot/relation/findCardCategory/${res[i].id}/${props.userId}/${props.modelId}`)
                     result = await resNoJson.json()
                 }
                 else result = { none: `pas de categorie container id ${i}` }
@@ -331,11 +308,12 @@ const ChatBotArea = (props) => {
 
 
     const getColor = async () => {
-        const resFind = await fetch(`http://localhost:8000/api/chatbot/model/findAll/${props.userId}`, {
+        const resFind = await fetch(`${url}/model/findAll/${props.userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Acces-Control-Allow-Origin': '*'
+                'Acces-Control-Allow-Origin': { origin },
+                'authorization': props.token
             }
         })
         const resFindJson = await resFind.json()
@@ -386,26 +364,20 @@ const ChatBotArea = (props) => {
 
 
     return (
-        <div className={!chatActive && "containerIconChat"} style={chatActive ? containerChatbot : null}>
+        <div style={chatActive ? containerChatbot : null}>
             {chatActive &&
                 <div className="headChatbot">
                     <img onClick={() => { setChatActive(!chatActive) }} alt="close sortouch" src={cross} className="crossChatbot" />
                     <img onClick={reloadFunction} alt="reload sortouch" src={reload} className="reloadChatbot" />
-                    <img src={back} className="backIconSortouch" onClick={backResponse} />
+                    <img src={require('./back.png')} className="backIconSortouch" onClick={backResponse} />
                     <a target="__blank" href="https://sortouch.com" className="sortouch">Sortouch</a>
                 </div>}
+            {!chatActive &&
+                <button onClick={() => { setChatActive(true) }} className="menuChatbot">Prévisualiser</button>}
             {!load && !(search.length > 0) ?
                 <div className={chatActive ? "contentChatbot" : "contentIcon"}>
                     <div className={chatActive && "divRelativeSortouch"}>
-                        {!chatActive ?
-                            <div className="contentIcon">
-                                {textIcon &&
-                                    <div className="contentTextIconChat">
-                                        <p onClick={activeChat} className="textIconCard"><Questionchat text={"Aidez moi à vous guider !"} /></p>
-                                    </div>}
-                                <img alt="icon chat" onClick={activeChat} src={logo} className="iconChat" />
-                            </div>
-                            : chatActive && posted === false &&
+                        {chatActive && posted === false &&
                             Array.isArray(containers) &&
                             containers.map((container, index) => {
                                 return (
@@ -459,7 +431,7 @@ const ChatBotArea = (props) => {
                             <div className="contentIcon">
                                 {textIcon &&
                                     <div className="contentTextIconChat">
-                                        <p onClick={activeChat} className="textIconCard"><Questionchat text={"Prenez contact avec moi !"} /></p>
+                                        <p onClick={activeChat} className="textIconCard"><Questionchat text={"Aidez moi à vous guider !"} /></p>
                                     </div>}
                                 <img alt="icon chat" onClick={activeChat} src={logo} className="iconChat" />
                             </div>
