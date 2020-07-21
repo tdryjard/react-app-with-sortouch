@@ -10,7 +10,7 @@ function App() {
           Sortouch app React exemple
       </header>
       
-      <Sortouch userId={139} modelId={140}/>
+      <Sortouch userId={21} modelId={11}/>
     </div>
   );
 }
